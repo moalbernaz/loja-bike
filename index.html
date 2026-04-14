@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Loja Bike Tour">
+<title>Loja Bike Tour</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#F5F0E8;--card:#fff;--border:#E2DDD5;--text:#1C1C1A;--muted:#6A6A62;
+  --gold:#C4A97D;--terra:#8B5E3C;--moss:#3D4F2E;--danger:#C0392B;--warn:#BA7517;
+  --green:#2E7D32;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;
+  background:var(--bg);color:var(--text);font-size:16px;
+  padding-bottom:env(safe-area-inset-bottom,20px)}
+.header{background:var(--moss);color:#fff;padding:14px 16px 12px;
+  padding-top:calc(14px + env(safe-area-inset-top,0px));
+  position:sticky;top:0;z-index:100}
+.header-top{display:flex;align-items:center;justify-content:space-between}
+.header h1{font-size:20px;font-weight:600;letter-spacing:-.3px}
+.header-sub{font-size:12px;color:rgba(255,255,255,.7);margin-top:2px}
+.badge-zero-alert{background:var(--danger);color:#fff;font-size:11px;
+  padding:2px 7px;border-radius:20px;font-weight:600}
+.tabs{display:flex;background:var(--moss);border-top:1px solid rgba(255,255,255,.15)}
+.tab{flex:1;padding:10px 4px;font-size:13px;font-weight:500;color:rgba(255,255,255,.6);
+  text-align:center;border:none;background:none;cursor:pointer}
+.tab.active{color:#fff;border-bottom:2px solid var(--gold)}
+.page{display:none;padding:0 0 24px}
+.page.active{display:block}
+
+/* ── VENDA RÁPIDA ── */
+.quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px}
+.q-section-title{grid-column:1/-1;font-size:11px;font-weight:600;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+  padding:4px 0 0}
+.q-btn{background:var(--card);border:1px solid var(--border);border-radius:12px;
+  padding:12px 10px;text-align:left;cursor:pointer;position:relative;
+  -webkit-appearance:none;width:100%}
+.q-btn:active{transform:scale(.96);background:#f0ebe3}
+.q-btn.zero{opacity:.45;pointer-events:none}
+.q-name{font-size:13px;font-weight:600;color:var(--text);line-height:1.2;display:block}
+.q-size{font-size:11px;color:var(--muted);margin-top:2px;display:block}
+.q-qty{position:absolute;top:10px;right:10px;font-size:18px;font-weight:700;
+  color:var(--moss)}
+.q-qty.low{color:var(--warn)}
+.q-qty.zero{color:var(--danger)}
+.sold-flash{position:absolute;inset:0;background:var(--moss);border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:22px;font-weight:700;opacity:0;pointer-events:none;
+  transition:opacity .15s}
+.sold-flash.show{opacity:1}
+
+/* ── ESTOQUE ── */
+.section{margin:0 12px 16px}
+.sec-head{display:flex;justify-content:space-between;align-items:center;
+  padding:12px 0 8px;border-bottom:1px solid var(--border)}
+.sec-head h2{font-size:14px;font-weight:600;color:var(--text)}
+.sec-badge{font-size:11px;background:#eee;color:var(--muted);
+  padding:2px 8px;border-radius:20px}
+.item-row{display:flex;align-items:center;padding:10px 0;
+  border-bottom:1px solid var(--border);gap:10px}
+.item-row:last-child{border-bottom:none}
+.item-info{flex:1}
+.item-name{font-size:14px;font-weight:500;color:var(--text)}
+.item-size{font-size:12px;color:var(--muted);margin-top:1px}
+.item-price{font-size:12px;color:var(--muted);min-width:44px;text-align:right}
+.qty-ctrl{display:flex;align-items:center;gap:6px}
+.qbtn{width:34px;height:34px;border-radius:8px;border:1px solid var(--border);
+  background:var(--card);color:var(--text);font-size:20px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-weight:300}
+.qbtn:active{background:#e8e4dc;transform:scale(.93)}
+.qnum{min-width:26px;text-align:center;font-size:16px;font-weight:600}
+.qnum.zero{color:var(--danger)}
+.qnum.low{color:var(--warn)}
+.badge-esgotado{font-size:10px;background:#fde;color:var(--danger);
+  border-radius:20px;padding:1px 6px;margin-left:4px}
+
+/* ── SUMÁRIO ── */
+.sum-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px}
+.sum-card{background:var(--card);border:1px solid var(--border);
+  border-radius:12px;padding:14px 12px}
+.sum-card.full{grid-column:1/-1}
+.sum-val{font-size:26px;font-weight:700;color:var(--text)}
+.sum-lbl{font-size:12px;color:var(--muted);margin-top:3px}
+.sum-val.green{color:var(--green)}
+
+/* ── VENDAS ── */
+.filter-row{display:flex;gap:6px;padding:12px 12px 0;flex-wrap:wrap}
+.fbtn{font-size:12px;padding:6px 12px;border-radius:20px;
+  border:1px solid var(--border);background:var(--card);
+  color:var(--muted);cursor:pointer;font-weight:500}
+.fbtn.active{background:var(--moss);color:#fff;border-color:var(--moss)}
+.date-row{display:flex;gap:8px;padding:10px 12px 0;align-items:center}
+.date-row input{flex:1;font-size:13px;padding:7px 10px;border:1px solid var(--border);
+  border-radius:8px;background:var(--card);color:var(--text)}
+.date-row button{font-size:12px;padding:7px 12px;border-radius:8px;
+  border:1px solid var(--border);background:var(--card);cursor:pointer}
+.sale-tbl{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0 0}
+.sale-tbl th{padding:8px 12px;text-align:left;font-size:11px;font-weight:600;
+  color:var(--muted);letter-spacing:.06em;border-bottom:1px solid var(--border)}
+.sale-tbl td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text)}
+.sale-tbl td:last-child{text-align:right;font-weight:600}
+.sale-tbl tfoot td{font-weight:700;background:#f5f0e8;border-top:2px solid var(--border)}
+.no-sales{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px}
+
+/* ── PREÇOS / ADD ── */
+.form-card{background:var(--card);border:1px solid var(--border);
+  border-radius:12px;margin:12px;padding:14px}
+.form-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px}
+.frow{display:flex;gap:8px;margin-bottom:8px}
+.frow input,.frow select{flex:1;font-size:14px;padding:9px 11px;
+  border:1px solid var(--border);border-radius:8px;
+  background:var(--card);color:var(--text);-webkit-appearance:none}
+.frow button,.btn-full{font-size:14px;padding:10px 14px;border-radius:8px;
+  border:1px solid var(--border);background:var(--card);
+  color:var(--text);cursor:pointer;font-weight:500}
+.btn-full{width:100%;margin:4px 0}
+.btn-primary{background:var(--moss);color:#fff;border-color:var(--moss);
+  display:block;width:calc(100% - 24px);margin:0 12px;
+  font-size:15px;padding:13px;border-radius:10px;cursor:pointer;font-weight:600}
+.price-item{display:flex;align-items:center;padding:9px 0;
+  border-bottom:1px solid var(--border);gap:8px}
+.price-item:last-child{border-bottom:none}
+.price-name{flex:1;font-size:13px;color:var(--text)}
+.price-input{width:76px;font-size:14px;padding:6px 8px;text-align:right;
+  border:1px solid var(--border);border-radius:8px;
+  background:var(--bg);color:var(--text)}
+.toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom));
+  left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--moss);color:#fff;padding:10px 20px;border-radius:20px;
+  font-size:14px;font-weight:500;opacity:0;transition:all .3s;z-index:999;
+  white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.danger-btn{color:var(--danger);background:none;border:none;
+  font-size:13px;padding:10px;cursor:pointer;display:block;margin:8px auto}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div>
+      <h1>Loja Bike Tour</h1>
+      <div class="header-sub" id="header-sub">carregando...</div>
+    </div>
+    <span class="badge-zero-alert" id="zero-alert" style="display:none"></span>
+  </div>
+  <div class="tabs" style="margin:10px -16px -12px">
+    <button class="tab active" onclick="showPage('venda',this)">Venda</button>
+    <button class="tab" onclick="showPage('estoque',this)">Estoque</button>
+    <button class="tab" onclick="showPage('relatorio',this)">Relatório</button>
+    <button class="tab" onclick="showPage('config',this)">Config</button>
+  </div>
+</div>
+
+<!-- ════ VENDA RÁPIDA ════ -->
+<div id="page-venda" class="page active">
+  <div class="quick-grid" id="quick-grid"></div>
+</div>
+
+<!-- ════ ESTOQUE ════ -->
+<div id="page-estoque" class="page">
+  <div id="stock-detail"></div>
+</div>
+
+<!-- ════ RELATÓRIO ════ -->
+<div id="page-relatorio" class="page">
+  <div class="sum-cards" id="rel-summary"></div>
+  <div class="filter-row">
+    <button class="fbtn active" onclick="setFilter('hoje',this)">Hoje</button>
+    <button class="fbtn" onclick="setFilter('7',this)">7 dias</button>
+    <button class="fbtn" onclick="setFilter('30',this)">30 dias</button>
+    <button class="fbtn" onclick="setFilter('custom',this)">Período</button>
+  </div>
+  <div class="date-row" id="date-row" style="display:none">
+    <input type="date" id="d-from">
+    <span style="color:var(--muted)">até</span>
+    <input type="date" id="d-to">
+    <button onclick="renderReport()">OK</button>
+  </div>
+  <div id="report-table"></div>
+  <button class="danger-btn" onclick="if(confirm('Apagar histórico de vendas?')){clearSales()}">Apagar histórico</button>
+</div>
+
+<!-- ════ CONFIG ════ -->
+<div id="page-config" class="page">
+  <div class="form-card">
+    <div class="form-title">Adicionar produto</div>
+    <div class="frow">
+      <input type="text" id="n-name" placeholder="Nome" style="flex:2">
+      <input type="text" id="n-size" placeholder="Tam." style="max-width:64px">
+    </div>
+    <div class="frow">
+      <select id="n-cat">
+        <option>Calças</option><option>Bretelli</option><option>Jaquetas</option>
+        <option>Meias</option><option>Bandanas</option><option>Luvas</option><option>Outros</option>
+      </select>
+      <input type="number" id="n-qty" placeholder="Qtd" min="0" style="max-width:64px">
+      <input type="number" id="n-price" placeholder="€" min="0" step="0.5" style="max-width:64px">
+    </div>
+    <div class="frow"><button onclick="addProduct()" style="flex:1;background:var(--moss);color:#fff;border-color:var(--moss)">+ Adicionar</button></div>
+  </div>
+
+  <div class="form-card">
+    <div class="form-title">Editar preços</div>
+    <div id="price-list"></div>
+  </div>
+  <button class="btn-primary" onclick="savePrices()">Salvar preços</button>
+
+  <div style="margin:16px 12px 0">
+    <button class="btn-full" onclick="if(confirm('Restaurar estoque inicial?')){resetStock()}">Restaurar estoque inicial</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SK="btloja_stock_v1", VK="btloja_sales_v1";
+const DEF=[
+  {cat:"Calças",name:"Calça Homem",size:"M",qty:2,price:0},
+  {cat:"Calças",name:"Calça Homem",size:"L",qty:3,price:0},
+  {cat:"Calças",name:"Calça Homem",size:"XL",qty:3,price:0},
+  {cat:"Calças",name:"Calça Homem",size:"2XL",qty:4,price:0},
+  {cat:"Bretelli",name:"Bretelli Homem",size:"M",qty:2,price:0},
+  {cat:"Bretelli",name:"Bretelli Homem",size:"L",qty:2,price:0},
+  {cat:"Bretelli",name:"Bretelli Homem",size:"XL",qty:2,price:0},
+  {cat:"Bretelli",name:"Bretelli Homem",size:"3XL",qty:1,price:0},
+  {cat:"Jaquetas",name:"Jaqueta Térmica",size:"S",qty:1,price:0},
+  {cat:"Jaquetas",name:"Jaqueta Térmica",size:"M",qty:1,price:0},
+  {cat:"Jaquetas",name:"Jaqueta Térmica",size:"L",qty:1,price:0},
+  {cat:"Calças",name:"Calça Feminina",size:"S",qty:3,price:0},
+  {cat:"Calças",name:"Calça Feminina",size:"M",qty:2,price:0},
+  {cat:"Calças",name:"Calça Feminina",size:"L",qty:2,price:0},
+  {cat:"Calças",name:"Calça Feminina",size:"XL",qty:2,price:0},
+  {cat:"Bretelli",name:"Bretelli Mulher",size:"S",qty:1,price:0},
+  {cat:"Bretelli",name:"Bretelli Mulher",size:"M",qty:4,price:0},
+  {cat:"Bretelli",name:"Bretelli Mulher",size:"L",qty:4,price:0},
+  {cat:"Bretelli",name:"Bretelli Mulher",size:"XL",qty:2,price:0},
+  {cat:"Meias",name:"Meias Mod.1",size:"Único",qty:0,price:0},
+  {cat:"Meias",name:"Meias Mod.2",size:"Único",qty:0,price:0},
+  {cat:"Meias",name:"Meias Mod.3",size:"Único",qty:0,price:0},
+  {cat:"Meias",name:"Meias Mod.4",size:"Único",qty:0,price:0},
+  {cat:"Bandanas",name:"Bandana",size:"Único",qty:0,price:0},
+  {cat:"Luvas",name:"Luvas",size:"S",qty:0,price:0},
+  {cat:"Luvas",name:"Luvas",size:"M",qty:0,price:0},
+  {cat:"Luvas",name:"Luvas",size:"L",qty:0,price:0},
+  {cat:"Luvas",name:"Luvas",size:"XL",qty:0,price:0},
+];
+
+let stock=[], sales=[], activeFilter="hoje";
+
+function load(){
+  try{stock=JSON.parse(localStorage.getItem(SK))||JSON.parse(JSON.stringify(DEF))}catch(e){stock=JSON.parse(JSON.stringify(DEF))}
+  try{sales=JSON.parse(localStorage.getItem(VK))||[]}catch(e){sales=[]}
+}
+function saveStock(){localStorage.setItem(SK,JSON.stringify(stock));updateHeader()}
+function saveSales(){localStorage.setItem(VK,JSON.stringify(sales))}
+function clearSales(){sales=[];saveSales();renderReport();toast("Histórico apagado")}
+function resetStock(){stock=JSON.parse(JSON.stringify(DEF));saveStock();renderAll();toast("Estoque restaurado")}
+
+function toast(msg){
+  const t=document.getElementById("toast");
+  t.textContent=msg;t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),1800)
+}
+
+function updateHeader(){
+  const total=stock.reduce((s,i)=>s+i.qty,0);
+  const valor=stock.reduce((s,i)=>s+(i.qty*(i.price||0)),0);
+  const zero=stock.filter(i=>i.qty===0).length;
+  const dt=new Date();
+  document.getElementById("header-sub").textContent=
+    total+" peças · €"+valor.toFixed(0)+" · "+dt.toLocaleDateString("pt-BR");
+  const za=document.getElementById("zero-alert");
+  if(zero>0){za.textContent=zero+" esgotados";za.style.display=""}
+  else za.style.display="none";
+}
+
+function showPage(id,btn){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  document.getElementById("page-"+id).classList.add("active");
+  btn.classList.add("active");
+  if(id==="relatorio")renderReport();
+  if(id==="config")renderPrices();
+}
+
+/* ── VENDA RÁPIDA ── */
+function renderQuick(){
+  const cats={};
+  stock.forEach((item,idx)=>{
+    if(!cats[item.cat])cats[item.cat]=[];
+    cats[item.cat].push({...item,idx});
+  });
+  const g=document.getElementById("quick-grid");
+  g.innerHTML="";
+  Object.entries(cats).forEach(([cat,items])=>{
+    const t=document.createElement("div");
+    t.className="q-section-title";t.textContent=cat;g.appendChild(t);
+    items.forEach(item=>{
+      const qc=item.qty===0?"zero":item.qty<=1?"low":"";
+      const b=document.createElement("button");
+      b.className="q-btn"+(item.qty===0?" zero":"");
+      b.innerHTML=`<span class="q-name">${item.name}</span>
+        <span class="q-size">Tam. ${item.size}</span>
+        <span class="q-qty ${qc}">${item.qty}</span>
+        <div class="sold-flash" id="flash-${item.idx}">−1</div>`;
+      b.onclick=()=>quickSell(item.idx,b);
+      g.appendChild(b);
+    });
+  });
+}
+
+function quickSell(idx,btn){
+  if(stock[idx].qty<=0)return;
+  stock[idx].qty--;
+  const item=stock[idx];
+  sales.push({ts:Date.now(),name:item.name,size:item.size,cat:item.cat,price:item.price||0});
+  saveStock();saveSales();
+  const flash=document.getElementById("flash-"+idx);
+  if(flash){flash.classList.add("show");setTimeout(()=>flash.classList.remove("show"),400)}
+  setTimeout(()=>renderQuick(),450);
+}
+
+/* ── ESTOQUE DETALHE ── */
+function renderDetail(){
+  const cats={};
+  stock.forEach((item,idx)=>{
+    if(!cats[item.cat])cats[item.cat]=[];
+    cats[item.cat].push({...item,idx});
+  });
+  const el=document.getElementById("stock-detail");
+  el.innerHTML="";
+  Object.entries(cats).forEach(([cat,items])=>{
+    const total=items.reduce((s,i)=>s+i.qty,0);
+    const sec=document.createElement("div");sec.className="section";
+    sec.innerHTML=`<div class="sec-head"><h2>${cat}</h2><span class="sec-badge">${total} peças</span></div>`;
+    items.forEach(item=>{
+      const qc=item.qty===0?"zero":item.qty<=1?"low":"";
+      const bz=item.qty===0?'<span class="badge-esgotado">esgotado</span>':"";
+      const pr=item.price>0?`€${item.price}`:"";
+      const row=document.createElement("div");row.className="item-row";
+      row.innerHTML=`<div class="item-info">
+        <div class="item-name">${item.name}${bz}</div>
+        <div class="item-size">Tam. ${item.size}</div>
+      </div>
+      <span class="item-price">${pr}</span>
+      <div class="qty-ctrl">
+        <button class="qbtn" onclick="adj(${item.idx},-1)">−</button>
+        <span class="qnum ${qc}">${item.qty}</span>
+        <button class="qbtn" onclick="adj(${item.idx},+1)">+</button>
+      </div>`;
+      sec.appendChild(row);
+    });
+    el.appendChild(sec);
+  });
+}
+
+function adj(idx,d){
+  if(d<0&&stock[idx].qty<=0)return;
+  if(d<0){
+    const i=stock[idx];
+    sales.push({ts:Date.now(),name:i.name,size:i.size,cat:i.cat,price:i.price||0});
+    saveSales();
+  }
+  stock[idx].qty=Math.max(0,stock[idx].qty+d);
+  saveStock();renderDetail();
+}
+
+/* ── RELATÓRIO ── */
+function setFilter(f,btn){
+  activeFilter=f;
+  document.querySelectorAll(".fbtn").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  document.getElementById("date-row").style.display=f==="custom"?"flex":"none";
+  if(f!=="custom")renderReport();
+}
+function getBounds(){
+  const now=Date.now();
+  const sod=new Date();sod.setHours(0,0,0,0);
+  if(activeFilter==="hoje")return[sod.getTime(),now];
+  if(activeFilter==="7")return[sod.getTime()-6*864e5,now];
+  if(activeFilter==="30")return[sod.getTime()-29*864e5,now];
+  const f=document.getElementById("d-from").value;
+  const t=document.getElementById("d-to").value;
+  if(!f||!t)return[0,now];
+  return[new Date(f).getTime(),new Date(t).getTime()+86399999];
+}
+function renderReport(){
+  const[from,to]=getBounds();
+  const filtered=sales.filter(s=>s.ts>=from&&s.ts<=to);
+  const rev=filtered.reduce((s,i)=>s+(i.price||0),0);
+  const cnt=filtered.length;
+  document.getElementById("rel-summary").innerHTML=`
+    <div class="sum-card"><div class="sum-val green">€${rev.toFixed(2)}</div><div class="sum-lbl">receita no período</div></div>
+    <div class="sum-card"><div class="sum-val">${cnt}</div><div class="sum-lbl">itens vendidos</div></div>`;
+  const el=document.getElementById("report-table");
+  if(!filtered.length){el.innerHTML='<div class="no-sales">Sem vendas no período</div>';return}
+  const g={};
+  filtered.forEach(s=>{
+    const k=s.name+" / "+s.size;
+    if(!g[k])g[k]={name:s.name,size:s.size,n:0,rev:0};
+    g[k].n++;g[k].rev+=(s.price||0);
+  });
+  const rows=Object.values(g).sort((a,b)=>b.n-a.n);
+  let h=`<table class="sale-tbl"><thead><tr><th>Produto</th><th>Qtd</th><th>Receita</th></tr></thead><tbody>`;
+  rows.forEach(r=>{h+=`<tr><td>${r.name}<br><small style="color:var(--muted)">Tam. ${r.size}</small></td><td>${r.n}</td><td>€${r.rev.toFixed(2)}</td></tr>`});
+  h+=`</tbody><tfoot><tr><td><strong>Total</strong></td><td><strong>${cnt}</strong></td><td><strong>€${rev.toFixed(2)}</strong></td></tr></tfoot></table>`;
+  el.innerHTML=h;
+}
+
+/* ── PREÇOS ── */
+function renderPrices(){
+  const el=document.getElementById("price-list");
+  el.innerHTML="";
+  stock.forEach((item,idx)=>{
+    const row=document.createElement("div");row.className="price-item";
+    row.innerHTML=`<span class="price-name">${item.name} <span style="color:var(--muted);font-size:11px">/ ${item.size}</span></span>
+      <input class="price-input" type="number" min="0" step="0.5" value="${item.price||''}" id="pp-${idx}" placeholder="€">`;
+    el.appendChild(row);
+  });
+}
+function savePrices(){
+  stock.forEach((_,i)=>{
+    const v=parseFloat(document.getElementById("pp-"+i).value);
+    stock[i].price=isNaN(v)?0:v;
+  });
+  saveStock();toast("Preços salvos!");
+}
+function addProduct(){
+  const name=document.getElementById("n-name").value.trim();
+  const size=document.getElementById("n-size").value.trim()||"Único";
+  const qty=parseInt(document.getElementById("n-qty").value)||0;
+  const cat=document.getElementById("n-cat").value;
+  const price=parseFloat(document.getElementById("n-price").value)||0;
+  if(!name)return;
+  stock.push({cat,name,size,qty,price});
+  saveStock();renderAll();
+  ["n-name","n-size","n-qty","n-price"].forEach(id=>document.getElementById(id).value="");
+  toast("Produto adicionado!");
+}
+
+function renderAll(){renderQuick();renderDetail();updateHeader()}
+
+load();renderAll();
+</script>
+</body>
+</html>
