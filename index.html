@@ -359,7 +359,7 @@
 
   .add-btn-float {
     position: fixed;
-    bottom: 24px;
+    bottom: 80px;
     right: 20px;
     width: 52px;
     height: 52px;
@@ -506,13 +506,16 @@
 
 <!-- ESTOQUE -->
 <div id="page-estoque" class="page">
+  <button onclick="abrirModalNovo()" style="width:100%;padding:12px;background:var(--verde);color:white;border:none;border-radius:10px;font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;cursor:pointer;margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 2px 8px rgba(46,204,113,0.35)">
+    <span style="font-size:1.4rem">＋</span> Adicionar novo produto
+  </button>
   <div class="resumo-cards" style="margin-bottom:12px">
     <div class="resumo-card">
       <div class="label">Itens em estoque</div>
       <div class="valor azul" id="e-itens">0</div>
     </div>
     <div class="resumo-card">
-      <div class="label">Valor total R$</div>
+      <div class="label">Valor total €</div>
       <div class="valor verde" id="e-valor">0,00</div>
     </div>
     <div class="resumo-card">
@@ -539,7 +542,7 @@
       <div class="valor azul" id="r-qtd">0</div>
     </div>
     <div class="resumo-card">
-      <div class="label">Total R$</div>
+      <div class="label">Total €</div>
       <div class="valor verde" id="r-total">0,00</div>
     </div>
     <div class="resumo-card">
@@ -598,7 +601,7 @@
       </select>
     </div>
     <div class="form-group">
-      <label>Preço (R$) — deixe 0 para "sem valor"</label>
+      <label>Preço (€) — deixe 0 para "sem valor"</label>
       <input type="number" id="m-preco" min="0" step="0.01" value="0">
     </div>
     <div class="form-group">
@@ -631,71 +634,102 @@
 <script>
 // ========== DADOS INICIAIS ==========
 const PRODUTOS_INICIAIS = [
-  // JERSEYS VENDA
-  { id: 1,  nome: 'Jersey Cereja P',   cat: 'Jerseys',    preco: 0, estoque: 5, kit: false },
-  { id: 2,  nome: 'Jersey Cereja M',   cat: 'Jerseys',    preco: 0, estoque: 5, kit: false },
-  { id: 3,  nome: 'Jersey Cereja G',   cat: 'Jerseys',    preco: 0, estoque: 5, kit: false },
-  { id: 4,  nome: 'Jersey Cereja GG',  cat: 'Jerseys',    preco: 0, estoque: 5, kit: false },
-  { id: 5,  nome: 'Jersey Cereja XG',  cat: 'Jerseys',    preco: 0, estoque: 5, kit: false },
-  { id: 6,  nome: 'Jersey Cereja XGG', cat: 'Jerseys',    preco: 0, estoque: 3, kit: false },
-  { id: 7,  nome: 'Jersey Vermelha P',  cat: 'Jerseys',   preco: 0, estoque: 5, kit: false },
-  { id: 8,  nome: 'Jersey Vermelha M',  cat: 'Jerseys',   preco: 0, estoque: 5, kit: false },
-  { id: 9,  nome: 'Jersey Vermelha G',  cat: 'Jerseys',   preco: 0, estoque: 5, kit: false },
-  { id: 10, nome: 'Jersey Vermelha GG', cat: 'Jerseys',   preco: 0, estoque: 5, kit: false },
-  { id: 11, nome: 'Jersey Vermelha XG', cat: 'Jerseys',   preco: 0, estoque: 3, kit: false },
-  { id: 12, nome: 'Jersey Vermelha XGG',cat: 'Jerseys',   preco: 0, estoque: 2, kit: false },
-  { id: 13, nome: 'Jersey Azul P',      cat: 'Jerseys',   preco: 0, estoque: 5, kit: false },
-  { id: 14, nome: 'Jersey Azul M',      cat: 'Jerseys',   preco: 0, estoque: 5, kit: false },
-  { id: 15, nome: 'Jersey Azul G',      cat: 'Jerseys',   preco: 0, estoque: 5, kit: false },
-  { id: 16, nome: 'Jersey Azul GG',     cat: 'Jerseys',   preco: 0, estoque: 4, kit: false },
-  { id: 17, nome: 'Jersey Azul XG',     cat: 'Jerseys',   preco: 0, estoque: 3, kit: false },
-  { id: 18, nome: 'Jersey Azul XGG',    cat: 'Jerseys',   preco: 0, estoque: 2, kit: false },
-  // BRETELLI
-  { id: 19, nome: 'Bretelli Cereja Masc P',  cat: 'Bretelli', preco: 0, estoque: 4, kit: false },
-  { id: 20, nome: 'Bretelli Cereja Masc M',  cat: 'Bretelli', preco: 0, estoque: 4, kit: false },
-  { id: 21, nome: 'Bretelli Cereja Masc G',  cat: 'Bretelli', preco: 0, estoque: 4, kit: false },
-  { id: 22, nome: 'Bretelli Cereja Masc GG', cat: 'Bretelli', preco: 0, estoque: 3, kit: false },
-  { id: 23, nome: 'Bretelli Cereja Fem P',   cat: 'Bretelli', preco: 0, estoque: 4, kit: false },
-  { id: 24, nome: 'Bretelli Cereja Fem M',   cat: 'Bretelli', preco: 0, estoque: 4, kit: false },
-  { id: 25, nome: 'Bretelli Cereja Fem G',   cat: 'Bretelli', preco: 0, estoque: 4, kit: false },
-  { id: 26, nome: 'Bretelli Cereja Fem GG',  cat: 'Bretelli', preco: 0, estoque: 3, kit: false },
-  { id: 27, nome: 'Bretelli Verde Masc P',   cat: 'Bretelli', preco: 0, estoque: 4, kit: false },
-  { id: 28, nome: 'Bretelli Verde Masc M',   cat: 'Bretelli', preco: 0, estoque: 4, kit: false },
-  { id: 29, nome: 'Bretelli Verde Masc G',   cat: 'Bretelli', preco: 0, estoque: 4, kit: false },
-  { id: 30, nome: 'Bretelli Verde Masc GG',  cat: 'Bretelli', preco: 0, estoque: 3, kit: false },
-  { id: 31, nome: 'Bretelli Verde Fem P',    cat: 'Bretelli', preco: 0, estoque: 4, kit: false },
-  { id: 32, nome: 'Bretelli Verde Fem M',    cat: 'Bretelli', preco: 0, estoque: 4, kit: false },
-  { id: 33, nome: 'Bretelli Verde Fem G',    cat: 'Bretelli', preco: 0, estoque: 4, kit: false },
-  { id: 34, nome: 'Bretelli Verde Fem GG',   cat: 'Bretelli', preco: 0, estoque: 3, kit: false },
-  // JAQUETAS
-  { id: 35, nome: 'Jaqueta Corta Vento P',  cat: 'Jaquetas', preco: 0, estoque: 4, kit: false },
-  { id: 36, nome: 'Jaqueta Corta Vento M',  cat: 'Jaquetas', preco: 0, estoque: 4, kit: false },
-  { id: 37, nome: 'Jaqueta Corta Vento G',  cat: 'Jaquetas', preco: 0, estoque: 4, kit: false },
-  { id: 38, nome: 'Jaqueta Corta Vento GG', cat: 'Jaquetas', preco: 0, estoque: 3, kit: false },
+  // CALÇA HOMEM
+  { id: 1,  nome: 'Calça Homem M',   cat: 'Calças', preco: 0, estoque: 2, kit: false },
+  { id: 2,  nome: 'Calça Homem L',   cat: 'Calças', preco: 0, estoque: 3, kit: false },
+  { id: 3,  nome: 'Calça Homem XL',  cat: 'Calças', preco: 0, estoque: 3, kit: false },
+  { id: 4,  nome: 'Calça Homem 2XL', cat: 'Calças', preco: 0, estoque: 4, kit: false },
+  // CALÇA FEMININA
+  { id: 5,  nome: 'Calça Fem S',   cat: 'Calças', preco: 0, estoque: 3, kit: false },
+  { id: 6,  nome: 'Calça Fem M',   cat: 'Calças', preco: 0, estoque: 2, kit: false },
+  { id: 7,  nome: 'Calça Fem L',   cat: 'Calças', preco: 0, estoque: 2, kit: false },
+  { id: 8,  nome: 'Calça Fem XL',  cat: 'Calças', preco: 0, estoque: 2, kit: false },
+  { id: 9,  nome: 'Calça Fem 2XL', cat: 'Calças', preco: 0, estoque: 2, kit: false },
+  // BRETELLI HOMEM
+  { id: 10, nome: 'Bretelli Homem M',   cat: 'Bretelli', preco: 0, estoque: 2, kit: false },
+  { id: 11, nome: 'Bretelli Homem L',   cat: 'Bretelli', preco: 0, estoque: 2, kit: false },
+  { id: 12, nome: 'Bretelli Homem XL',  cat: 'Bretelli', preco: 0, estoque: 2, kit: false },
+  { id: 13, nome: 'Bretelli Homem 3XL', cat: 'Bretelli', preco: 0, estoque: 1, kit: false },
+  // BRETELLI MULHER (curto)
+  { id: 14, nome: 'Bretelli Mulher S',  cat: 'Bretelli', preco: 0, estoque: 1, kit: false },
+  { id: 15, nome: 'Bretelli Mulher M',  cat: 'Bretelli', preco: 0, estoque: 4, kit: false },
+  { id: 16, nome: 'Bretelli Mulher L',  cat: 'Bretelli', preco: 0, estoque: 4, kit: false },
+  { id: 17, nome: 'Bretelli Mulher XL', cat: 'Bretelli', preco: 0, estoque: 2, kit: false },
+  // JAQUETA TÉRMICA
+  { id: 18, nome: 'Jaqueta Térmica S', cat: 'Jaquetas', preco: 0, estoque: 1, kit: false },
+  { id: 19, nome: 'Jaqueta Térmica M', cat: 'Jaquetas', preco: 0, estoque: 1, kit: false },
+  { id: 20, nome: 'Jaqueta Térmica L', cat: 'Jaquetas', preco: 0, estoque: 1, kit: false },
+  // JAQUETA CORTA VENTO
+  { id: 21, nome: 'Jaqueta Corta Vento P',  cat: 'Jaquetas', preco: 0, estoque: 4, kit: false },
+  { id: 22, nome: 'Jaqueta Corta Vento M',  cat: 'Jaquetas', preco: 0, estoque: 4, kit: false },
+  { id: 23, nome: 'Jaqueta Corta Vento G',  cat: 'Jaquetas', preco: 0, estoque: 4, kit: false },
+  { id: 24, nome: 'Jaqueta Corta Vento GG', cat: 'Jaquetas', preco: 0, estoque: 3, kit: false },
+  // BRETELLI CEREJA
+  { id: 25, nome: 'Bretelli Cereja Masc P',  cat: 'Bretelli', preco: 0, estoque: 4, kit: false },
+  { id: 26, nome: 'Bretelli Cereja Masc M',  cat: 'Bretelli', preco: 0, estoque: 4, kit: false },
+  { id: 27, nome: 'Bretelli Cereja Masc G',  cat: 'Bretelli', preco: 0, estoque: 4, kit: false },
+  { id: 28, nome: 'Bretelli Cereja Masc GG', cat: 'Bretelli', preco: 0, estoque: 3, kit: false },
+  { id: 29, nome: 'Bretelli Cereja Fem P',   cat: 'Bretelli', preco: 0, estoque: 4, kit: false },
+  { id: 30, nome: 'Bretelli Cereja Fem M',   cat: 'Bretelli', preco: 0, estoque: 4, kit: false },
+  { id: 31, nome: 'Bretelli Cereja Fem G',   cat: 'Bretelli', preco: 0, estoque: 4, kit: false },
+  { id: 32, nome: 'Bretelli Cereja Fem GG',  cat: 'Bretelli', preco: 0, estoque: 3, kit: false },
+  // BRETELLI VERDE
+  { id: 33, nome: 'Bretelli Verde Masc P',   cat: 'Bretelli', preco: 0, estoque: 4, kit: false },
+  { id: 34, nome: 'Bretelli Verde Masc M',   cat: 'Bretelli', preco: 0, estoque: 4, kit: false },
+  { id: 35, nome: 'Bretelli Verde Masc G',   cat: 'Bretelli', preco: 0, estoque: 4, kit: false },
+  { id: 36, nome: 'Bretelli Verde Masc GG',  cat: 'Bretelli', preco: 0, estoque: 3, kit: false },
+  { id: 37, nome: 'Bretelli Verde Fem P',    cat: 'Bretelli', preco: 0, estoque: 4, kit: false },
+  { id: 38, nome: 'Bretelli Verde Fem M',    cat: 'Bretelli', preco: 0, estoque: 4, kit: false },
+  { id: 39, nome: 'Bretelli Verde Fem G',    cat: 'Bretelli', preco: 0, estoque: 4, kit: false },
+  { id: 40, nome: 'Bretelli Verde Fem GG',   cat: 'Bretelli', preco: 0, estoque: 3, kit: false },
+  // JERSEYS
+  { id: 41, nome: 'Jersey Cereja P',    cat: 'Jerseys', preco: 0, estoque: 5, kit: false },
+  { id: 42, nome: 'Jersey Cereja M',    cat: 'Jerseys', preco: 0, estoque: 5, kit: false },
+  { id: 43, nome: 'Jersey Cereja G',    cat: 'Jerseys', preco: 0, estoque: 5, kit: false },
+  { id: 44, nome: 'Jersey Cereja GG',   cat: 'Jerseys', preco: 0, estoque: 5, kit: false },
+  { id: 45, nome: 'Jersey Cereja XG',   cat: 'Jerseys', preco: 0, estoque: 5, kit: false },
+  { id: 46, nome: 'Jersey Cereja XGG',  cat: 'Jerseys', preco: 0, estoque: 3, kit: false },
+  { id: 47, nome: 'Jersey Vermelha P',  cat: 'Jerseys', preco: 0, estoque: 5, kit: false },
+  { id: 48, nome: 'Jersey Vermelha M',  cat: 'Jerseys', preco: 0, estoque: 5, kit: false },
+  { id: 49, nome: 'Jersey Vermelha G',  cat: 'Jerseys', preco: 0, estoque: 5, kit: false },
+  { id: 50, nome: 'Jersey Vermelha GG', cat: 'Jerseys', preco: 0, estoque: 5, kit: false },
+  { id: 51, nome: 'Jersey Vermelha XG', cat: 'Jerseys', preco: 0, estoque: 3, kit: false },
+  { id: 52, nome: 'Jersey Vermelha XGG',cat: 'Jerseys', preco: 0, estoque: 2, kit: false },
+  { id: 53, nome: 'Jersey Azul P',      cat: 'Jerseys', preco: 0, estoque: 5, kit: false },
+  { id: 54, nome: 'Jersey Azul M',      cat: 'Jerseys', preco: 0, estoque: 5, kit: false },
+  { id: 55, nome: 'Jersey Azul G',      cat: 'Jerseys', preco: 0, estoque: 5, kit: false },
+  { id: 56, nome: 'Jersey Azul GG',     cat: 'Jerseys', preco: 0, estoque: 4, kit: false },
+  { id: 57, nome: 'Jersey Azul XG',     cat: 'Jerseys', preco: 0, estoque: 3, kit: false },
+  { id: 58, nome: 'Jersey Azul XGG',    cat: 'Jerseys', preco: 0, estoque: 2, kit: false },
   // BERMUDAS
-  { id: 39, nome: 'Bermuda Castelli Masc P',  cat: 'Bermudas', preco: 0, estoque: 4, kit: false },
-  { id: 40, nome: 'Bermuda Castelli Masc M',  cat: 'Bermudas', preco: 0, estoque: 4, kit: false },
-  { id: 41, nome: 'Bermuda Castelli Masc G',  cat: 'Bermudas', preco: 0, estoque: 4, kit: false },
-  { id: 42, nome: 'Bermuda Castelli Masc GG', cat: 'Bermudas', preco: 0, estoque: 3, kit: false },
-  { id: 43, nome: 'Bermuda Castelli Masc XG', cat: 'Bermudas', preco: 0, estoque: 2, kit: false },
-  { id: 44, nome: 'Bermuda Castelli Fem P',   cat: 'Bermudas', preco: 0, estoque: 4, kit: false },
-  { id: 45, nome: 'Bermuda Castelli Fem M',   cat: 'Bermudas', preco: 0, estoque: 4, kit: false },
-  { id: 46, nome: 'Bermuda Castelli Fem G',   cat: 'Bermudas', preco: 0, estoque: 4, kit: false },
-  { id: 47, nome: 'Bermuda Castelli Fem GG',  cat: 'Bermudas', preco: 0, estoque: 3, kit: false },
-  { id: 48, nome: 'Bermuda Castelli Fem XG',  cat: 'Bermudas', preco: 0, estoque: 2, kit: false },
+  { id: 59, nome: 'Bermuda Castelli Masc P',  cat: 'Bermudas', preco: 0, estoque: 4, kit: false },
+  { id: 60, nome: 'Bermuda Castelli Masc M',  cat: 'Bermudas', preco: 0, estoque: 4, kit: false },
+  { id: 61, nome: 'Bermuda Castelli Masc G',  cat: 'Bermudas', preco: 0, estoque: 4, kit: false },
+  { id: 62, nome: 'Bermuda Castelli Masc GG', cat: 'Bermudas', preco: 0, estoque: 3, kit: false },
+  { id: 63, nome: 'Bermuda Castelli Masc XG', cat: 'Bermudas', preco: 0, estoque: 2, kit: false },
+  { id: 64, nome: 'Bermuda Castelli Fem P',   cat: 'Bermudas', preco: 0, estoque: 4, kit: false },
+  { id: 65, nome: 'Bermuda Castelli Fem M',   cat: 'Bermudas', preco: 0, estoque: 4, kit: false },
+  { id: 66, nome: 'Bermuda Castelli Fem G',   cat: 'Bermudas', preco: 0, estoque: 4, kit: false },
+  { id: 67, nome: 'Bermuda Castelli Fem GG',  cat: 'Bermudas', preco: 0, estoque: 3, kit: false },
+  { id: 68, nome: 'Bermuda Castelli Fem XG',  cat: 'Bermudas', preco: 0, estoque: 2, kit: false },
   // CAMISETAS
-  { id: 49, nome: 'Camiseta Interior P',  cat: 'Camisetas', preco: 0, estoque: 5, kit: false },
-  { id: 50, nome: 'Camiseta Interior M',  cat: 'Camisetas', preco: 0, estoque: 5, kit: false },
-  { id: 51, nome: 'Camiseta Interior G',  cat: 'Camisetas', preco: 0, estoque: 5, kit: false },
-  // KIT BIKETOUR (controle unitário, sem valor)
-  { id: 52, nome: 'Jersey Amarela 2024',  cat: 'Kit BikeTour', preco: 0, estoque: 10, kit: true },
-  { id: 53, nome: 'Jersey Vinho 2025',    cat: 'Kit BikeTour', preco: 0, estoque: 10, kit: true },
-  { id: 54, nome: 'Jersey Azul 2026',     cat: 'Kit BikeTour', preco: 0, estoque: 10, kit: true },
-  { id: 55, nome: 'Mochila 2025',         cat: 'Kit BikeTour', preco: 0, estoque: 10, kit: true },
-  { id: 56, nome: 'Mochila 2026',         cat: 'Kit BikeTour', preco: 0, estoque: 10, kit: true },
+  { id: 69, nome: 'Camiseta Interior P', cat: 'Camisetas', preco: 0, estoque: 5, kit: false },
+  { id: 70, nome: 'Camiseta Interior M', cat: 'Camisetas', preco: 0, estoque: 5, kit: false },
+  { id: 71, nome: 'Camiseta Interior G', cat: 'Camisetas', preco: 0, estoque: 5, kit: false },
+  // KIT BIKETOUR
+  { id: 72, nome: 'Jersey Amarela 2024', cat: 'Kit BikeTour', preco: 0, estoque: 10, kit: true },
+  { id: 73, nome: 'Jersey Vinho 2025',   cat: 'Kit BikeTour', preco: 0, estoque: 10, kit: true },
+  { id: 74, nome: 'Jersey Azul 2026',    cat: 'Kit BikeTour', preco: 0, estoque: 10, kit: true },
+  { id: 75, nome: 'Mochila 2025',        cat: 'Kit BikeTour', preco: 0, estoque: 10, kit: true },
+  { id: 76, nome: 'Mochila 2026',        cat: 'Kit BikeTour', preco: 0, estoque: 10, kit: true },
 ];
-
 // ========== STATE ==========
+// Versão do schema — altere para forçar reset dos dados salvos
+const SCHEMA_VERSION = '2026-04';
+if (localStorage.getItem('loja_schema') !== SCHEMA_VERSION) {
+  localStorage.removeItem('loja_produtos');
+  localStorage.setItem('loja_schema', SCHEMA_VERSION);
+}
 let produtos = JSON.parse(localStorage.getItem('loja_produtos') || 'null') || PRODUTOS_INICIAIS.map(p => ({...p}));
 let historico = JSON.parse(localStorage.getItem('loja_historico') || '[]');
 let filtroEstoqueCat = 'Todos';
@@ -761,7 +795,7 @@ function registrarVenda(id) {
   historico.unshift({ id: p.id, nome: p.nome, preco: p.preco, kit: p.kit, ts: Date.now() });
   salvar();
   renderVenda();
-  mostrarFeedback(p.kit ? `📦 ${p.nome} entregue!` : (p.preco > 0 ? `✅ Venda: R$ ${p.preco.toFixed(2).replace('.',',')}` : `✅ ${p.nome} vendido`));
+  mostrarFeedback(p.kit ? `📦 ${p.nome} entregue!` : (p.preco > 0 ? `✅ Venda: € ${p.preco.toFixed(2)}` : `✅ ${p.nome} vendido`));
 }
 
 function mostrarFeedback(msg) {
@@ -798,7 +832,7 @@ function renderEstoque() {
       html += `<div class="estoque-item">
         <div class="info">
           <div class="nome">${p.nome}</div>
-          <div class="sub">${p.preco > 0 ? 'R$ ' + p.preco.toFixed(2).replace('.',',') : (p.kit ? 'controle unitário' : 'sem valor')}</div>
+          <div class="sub">${p.preco > 0 ? '€ ' + p.preco.toFixed(2) : (p.kit ? 'controle unitário' : 'sem valor')}</div>
         </div>
         <div class="qty-ctrl">
           <button onclick="ajustarEstoque(${p.id}, -1)">−</button>
@@ -930,7 +964,7 @@ function renderRelatorio() {
         <div class="h-nome">${h.nome}</div>
         <div class="h-hora">${hora}</div>
       </div>
-      <div class="h-preco ${h.kit ? 'kit' : ''}">${h.kit ? '📦 kit' : (h.preco > 0 ? 'R$ ' + h.preco.toFixed(2).replace('.',',') : '—')}</div>
+      <div class="h-preco ${h.kit ? 'kit' : ''}">${h.kit ? '📦 kit' : (h.preco > 0 ? '€ ' + h.preco.toFixed(2) : '—')}</div>
     </div>`;
   }).join('');
 }
